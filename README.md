@@ -13,15 +13,15 @@ Admin helper to enhance image tagging in Processwire [ProcessWire CMS](http://pr
 
 1. Install the module.
 
-1.) Go to field settings for any image, enable Selectize.js tagging;
-2.) add your tags for this field, one per line
-3.) To have a separate value/label, they should be comma separated (value,label);
-4.) Values for tags may not contain spaces
+2. Go to field settings for any image, enable Selectize.js tagging;
+3. add your tags for this field, one per line
+4. To have a separate value/label, they should be comma separated (value,label);
+5. Values for tags may not contain spaces
 
 example:
-tag1, Tag1 (use this for blah blah blah)
-tag2, Tag 2 (this tag wil do xyz)
-tag3, The greatest tag of all time - use only in an emergency!
+- tag1, Tag1 (use this for blah blah blah)
+- tag2, Tag 2 (this tag wil do xyz)
+- tag3, The greatest tag of all time - use only in an emergency!
 
 
 ## License
