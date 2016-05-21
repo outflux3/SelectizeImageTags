@@ -1,0 +1,154 @@
+<?php
+
+/**
+ * SelectizeImageTags module for ProcessWire
+ *
+ */
+
+/**
+ * Class SelectizeImageTags
+ */
+class SelectizeImageTags extends WireData implements Module {
+
+    public static function getModuleInfo() {
+        return array(
+            'title' => 'Selectize Image Tags',
+            'author' => 'Macrura',
+            'version' => 001,
+            'summary' => 'Admin helper for enabling selectized tags on inputfields.',
+            'href' => '',
+            'icon' => 'tags',
+            'singular' => true,
+            'autoload' => 'template=admin',
+            'requires'  => array("JquerySelectize")
+        );
+    }
+
+    protected $jsConfig = array();
+
+    public function addProperty(HookEvent $event) {
+         $event->return = 0;
+    }
+
+    public function init() {
+
+        $this->addHookProperty("InputfieldImage::selectizeTagField", $this, "addProperty");
+        $this->addHookProperty("InputfieldImage::selectizeTagList", $this, "addProperty");
+        $this->addHookProperty("InputfieldImage::selectizePlugins", $this, "addProperty");
+        $this->addHookProperty("InputfieldImage::selectizeAllowCreate", $this, "addProperty");
+
+        /**
+         * Adds additional options to the InputfieldText edit screen.
+         *
+         */
+        $this->addHookAfter("InputfieldImage::getConfigInputfields", function($event) {
+            $that = $event->object;
+
+            // Enable Selectize.js for this Field?
+            $field = $this->modules->get('InputfieldCheckbox');
+            $field->attr('name', 'selectizeTagField');
+            $field->attr('value', 0);
+            $field->label = $this->_('Enable Selectized input for the tags field?');
+            $field->description = $this->_('If checked, you may setup selectable tags for the image tags field.');
+            //$field->showIf = 'useTags>0';
+            if($that->selectizeTagField) $field->attr('checked', 'checked');
+                else $field->collapsed = Inputfield::collapsedYes;
+            $event->return->append($field);
+
+            // list of selectable text strings for this Field
+            $field = $this->modules->get('InputfieldTextarea');
+            $field->setAttribute('name', 'selectizeTagList');
+            $field->label = $this->_('Selectable Tags');
+            $description  = $this->_('List of tags, 1 per line: comma separated value,label.');
+            $field->description = $description;
+            $field->value = trim($that->selectizeTagList);
+            $field->showIf = 'selectizeTagField>0';
+            $event->return->append($field);
+
+            // Allow create ad-hoc tags
+            $field = $this->modules->get('InputfieldCheckbox');
+            $field->name = 'selectizeAllowCreate';
+            $field->label = __('Allow tag creation?', __FILE__);
+            $field->description = $this->_('By default tags are limited to the items listed above. Check this to allow any tags to be input.');
+            $field->notes = "If this is unchecked AND there are already tags on images AND those tags are not in your permitted list, they will end up being deleted when users save the page!";
+            $field->attr('value', 0);
+            if($that->selectizeAllowCreate) $field->attr('checked', 'checked');
+            $field->showIf = 'selectizeTagField>0';
+            $field->columnWidth = 50;
+            $event->return->append($field);
+
+            // Plugins to load
+            $field = $this->modules->get('InputfieldCheckboxes');
+            $field->name = 'selectizePlugins';
+            $field->label = __('Plugins', __FILE__);
+            $field->addOption('remove_button', __('Remove Button'));
+            $field->addOption('drag_drop', __('Drag and Drop'));
+            $field->addOption('restore_on_backspace', __('Restore on Backspace'));
+            $field->showIf = 'selectizeTagField>0';
+            $field->value = isset($that->selectizePlugins) ? $that->selectizePlugins : '';
+            $field->columnWidth = 50;
+            $event->return->append($field); 
+
+        });
+
+
+        $this->addHookAfter('InputfieldImage::getConfigAllowContext', function($event) {
+            $array = $event->return;
+            $addon = array('selectizeTagField','selectizeTagList','selectizeAllowCreate','selectizePlugins');
+            $merged = array_merge($array, $addon);
+            $event->return = $merged;
+        });
+
+        /**
+         * Attaches additional JS & CSS files when editing a page that
+         * uses this field/module and add the attrs to the fields.
+         *
+         */
+        $this->addHookBefore('InputfieldImage::render', function($event) {
+
+            $that = $event->object;
+
+            // Only load additional assets if:
+            // - Process is PageEdit
+            // - useTags is checked
+            // - selectizeTagField is enabled
+            // - selectizeTagList is populated for this field
+            if( ($that->process == 'ProcessPageEdit') && ($that->selectizeTagField && $that->selectizeTagList && $that->useTags) ) {
+
+                $that->modules->JquerySelectize;
+                $that->config->scripts->add($that->config->urls->siteModules . __CLASS__ . '/' . __CLASS__ . '.js?v=' . time());
+
+                if(isset($that->selectizeTagList) && $that->selectizeTagList !== '') {
+
+                    // this could be replaced with additional info about this field..
+                    $that->tagsFieldLabel = "Tags (selectized)";
+
+                    $tagsArray = array();
+
+                    // User strings
+                    $selectizeTagList = explode(PHP_EOL, $that->selectizeTagList);
+                    foreach($selectizeTagList as $row) {
+                        $parts = explode(',', $row);
+                        $tagVal = trim($parts[0]);
+                        $tagTxt = trim($parts[1]) ? trim($parts[1]) : trim($parts[0]);
+                        $tagsArray[] = array('value' => $tagVal, 'text' => $tagTxt);
+                    }
+
+                    $this->jsConfig[$that->id]['create'] = $that->selectizeAllowCreate ? true : false;
+                    $this->jsConfig[$that->id]['delimiter'] = ' ';
+                    $this->jsConfig[$that->id]['options'] = $tagsArray;
+                    if(isset($that->selectizePlugins)) {
+                        $this->jsConfig[$that->id]['plugins'] = $that->selectizePlugins;
+                    }
+
+                    $this->config->js(__CLASS__, $this->jsConfig);
+
+                } // end if isset
+
+            } // end if process
+
+        }); // end add hook
+
+    } //end init()
+
+} // end class
