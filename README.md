@@ -3,6 +3,9 @@
 
 Admin helper to enhance image tagging in Processwire [ProcessWire CMS](http://processwire.com/).
 
+!["Screenshot showing the interface of SelectizeImageTags"](https://github.com/outflux3/SelectizeImageTags/raw/master/screen.png)
+
+
 ## Features
 
 - Discreet tagging interface using the existing tags field on images.
