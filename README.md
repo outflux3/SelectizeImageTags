@@ -1,4 +1,4 @@
-SelectizeImageTags module for ProcessWire
+# SelectizeImageTags module for ProcessWire
 ================
 
 Admin helper to enhance image tagging in Processwire [ProcessWire CMS](http://processwire.com/).
@@ -8,6 +8,7 @@ Admin helper to enhance image tagging in Processwire [ProcessWire CMS](http://pr
 - Discreet tagging interface using the existing tags field on images.
 - Allows sorting of tags by drag and drop, and deletion by click
 - Allows admins to restrict the allowed tags.
+- Supports template context (different tags for same image field on different templates)
 
 ## Usage
 
