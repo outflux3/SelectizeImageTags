@@ -14,7 +14,7 @@ class SelectizeImageTags extends WireData implements Module {
         return array(
             'title' => 'Selectize Image Tags',
             'author' => 'Macrura',
-            'version' => 001,
+            'version' => 002,
             'summary' => 'Admin helper for enabling selectize.js on images tags field.',
             'href' => '',
             'icon' => 'tags',
@@ -130,7 +130,7 @@ class SelectizeImageTags extends WireData implements Module {
                     foreach($selectizeTagList as $row) {
                         $parts = explode(',', $row);
                         $tagVal = trim($parts[0]);
-                        $tagTxt = trim($parts[1]) ? trim($parts[1]) : trim($parts[0]);
+                        $tagTxt = isset($parts[1]) ? trim($parts[1]) : trim($parts[0]);
                         $tagsArray[] = array('value' => $tagVal, 'text' => $tagTxt);
                     }
 
