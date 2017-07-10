@@ -22,7 +22,7 @@ class SelectizeImageTags extends WireData implements Module {
             'autoload' => 'template=admin',
             'requires'  => array(
                 'JquerySelectize',
-                'ProcessWire>=3.0.67'
+                'ProcessWire>=3.0.61'
             )
         );
     }
@@ -33,7 +33,7 @@ class SelectizeImageTags extends WireData implements Module {
 	public function ___upgrade($fromVersion, $toVersion) {
 		// Upgrade from < v0.0.3
 		if($fromVersion < 3) {
-			if($this->config->version < '3.0.67') {
+			if($this->config->version < '3.0.61') {
 				throw new WireException("The minimum required ProcessWire version is 3.0.61");
 			}
 		}
