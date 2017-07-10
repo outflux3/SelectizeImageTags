@@ -14,15 +14,30 @@ class SelectizeImageTags extends WireData implements Module {
         return array(
             'title' => 'Selectize Image Tags',
             'author' => 'Macrura',
-            'version' => 002,
+            'version' => 003,
             'summary' => 'Admin helper for enabling selectize.js on images tags field.',
             'href' => '',
             'icon' => 'tags',
             'singular' => true,
             'autoload' => 'template=admin',
-            'requires'  => array("JquerySelectize")
+            'requires'  => array(
+                'JquerySelectize',
+                'ProcessWire>=3.0.61'
+            )
         );
     }
+
+	/**
+	 * Upgrade
+	 */
+	public function ___upgrade($fromVersion, $toVersion) {
+		// Upgrade from < v0.0.3
+		if($fromVersion < 3) {
+			if($this->config->version < '3.0.61') {
+				throw new WireException("The minimum required ProcessWire version is 3.0.61");
+			}
+		}
+	}
 
     protected $jsConfig = array();
 
@@ -87,7 +102,7 @@ class SelectizeImageTags extends WireData implements Module {
             $field->showIf = 'selectizeTagField>0';
             $field->value = isset($that->selectizePlugins) ? $that->selectizePlugins : '';
             $field->columnWidth = 50;
-            $event->return->append($field); 
+            $event->return->append($field);
 
         });
 
@@ -104,7 +119,7 @@ class SelectizeImageTags extends WireData implements Module {
          * uses this field/module and add the attrs to the fields.
          *
          */
-        $this->addHookBefore('InputfieldImage::render', function($event) {
+        $this->addHookBefore('InputfieldImage::renderReadyHook', function($event) {
 
             $that = $event->object;
 
@@ -126,7 +141,7 @@ class SelectizeImageTags extends WireData implements Module {
                     $tagsArray = array();
 
                     // User strings
-                    $selectizeTagList = explode(PHP_EOL, $that->selectizeTagList);
+                    $selectizeTagList = explode("\n", $that->selectizeTagList);
                     foreach($selectizeTagList as $row) {
                         $parts = explode(',', $row);
                         $tagVal = trim($parts[0]);
