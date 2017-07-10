@@ -27,6 +27,18 @@ class SelectizeImageTags extends WireData implements Module {
         );
     }
 
+	/**
+	 * Upgrade
+	 */
+	public function ___upgrade($fromVersion, $toVersion) {
+		// Upgrade from < v0.0.3
+		if($fromVersion < 3) {
+			if($this->config->version < '3.0.67') {
+				throw new WireException("The minimum required ProcessWire version is 3.0.61");
+			}
+		}
+	}
+
     protected $jsConfig = array();
 
     public function addProperty(HookEvent $event) {
