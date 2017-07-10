@@ -22,7 +22,7 @@ class SelectizeImageTags extends WireData implements Module {
             'autoload' => 'template=admin',
             'requires'  => array(
                 'JquerySelectize',
-                'ProcessWire>=3.0.61'
+                'ProcessWire>=3.0.67'
             )
         );
     }
