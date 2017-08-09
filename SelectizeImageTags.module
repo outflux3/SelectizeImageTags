@@ -10,22 +10,23 @@
  */
 class SelectizeImageTags extends WireData implements Module {
 
-    public static function getModuleInfo() {
-        return array(
-            'title' => 'Selectize Image Tags',
-            'author' => 'Macrura',
-            'version' => 003,
-            'summary' => 'Admin helper for enabling selectize.js on images tags field.',
-            'href' => '',
-            'icon' => 'tags',
-            'singular' => true,
-            'autoload' => 'template=admin',
-            'requires'  => array(
-                'JquerySelectize',
-                'ProcessWire>=3.0.61'
-            )
-        );
-    }
+    // public static function getModuleInfo() {
+    //     return array(
+    //         'title' => 'Selectize Image Tags',
+    //         'author' => 'Macrura',
+    //         'version' => 003,
+    //         'summary' => 'Admin helper for enabling selectize.js on images tags field.',
+    //         'href' => '',
+    //         'icon' => 'tags',
+    //         'singular' => true,
+    //         'autoload' => 'template=admin',
+    //         'requires'  => array(
+    //             'JquerySelectize',
+    //             'ProcessWire>=3.0.61'
+    //         )
+    //     );
+    // }
+
 
 	/**
 	 * Upgrade
@@ -142,10 +143,17 @@ class SelectizeImageTags extends WireData implements Module {
 
                     // User strings
                     $selectizeTagList = explode("\n", $that->selectizeTagList);
+
                     foreach($selectizeTagList as $row) {
-                        $parts = explode(',', $row);
-                        $tagVal = trim($parts[0]);
-                        $tagTxt = isset($parts[1]) ? trim($parts[1]) : trim($parts[0]);
+                        if(strpos($row, ',')) {
+                            $parts = explode(',', $row);
+                            $tagVal = trim($parts[0]);
+                            $tagTxt = isset($parts[1]) ? trim($parts[1]) : trim($parts[0]);
+                        } else {
+                            $tagVal = trim($row);
+                            $tagTxt = trim($row);
+                        }
+
                         $tagsArray[] = array('value' => $tagVal, 'text' => $tagTxt);
                     }
 
@@ -158,6 +166,13 @@ class SelectizeImageTags extends WireData implements Module {
 
                     $this->config->js(__CLASS__, $this->jsConfig);
 
+
+                    if($this->config->version > '3.0.66') {
+                        // prevent core from initializing the field...
+                        $this->addHookBefore("InputfieldFile::render", $this, "hookInputfieldFileRender_removeClass");
+                    }
+
+
                 } // end if isset
 
             } // end if process
@@ -165,5 +180,14 @@ class SelectizeImageTags extends WireData implements Module {
         }); // end add hook
 
     } //end init()
+
+
+    public function hookInputfieldFileRender_removeClass(HookEvent $event) {
+        $object = $event->object;
+        $object->wrapClass = str_replace('InputfieldFileHasTags', '', $object->wrapClass);
+    }
+
+
+
 
 } // end class
