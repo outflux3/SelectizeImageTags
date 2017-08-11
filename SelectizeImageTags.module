@@ -3,30 +3,31 @@
 /**
  * SelectizeImageTags module for ProcessWire
  *
+
+    public static function getModuleInfo() {
+        return array(
+            'title' => 'Selectize Image Tags',
+            'author' => 'Macrura',
+            'version' => 003,
+            'summary' => 'Admin helper for enabling selectize.js on images tags field.',
+            'href' => '',
+            'icon' => 'tags',
+            'singular' => true,
+            'autoload' => 'template=admin',
+            'requires'  => array(
+                'JquerySelectize',
+                'ProcessWire>=3.0.61'
+            )
+        );
+    }
+
+
  */
 
 /**
  * Class SelectizeImageTags
  */
 class SelectizeImageTags extends WireData implements Module {
-
-    // public static function getModuleInfo() {
-    //     return array(
-    //         'title' => 'Selectize Image Tags',
-    //         'author' => 'Macrura',
-    //         'version' => 003,
-    //         'summary' => 'Admin helper for enabling selectize.js on images tags field.',
-    //         'href' => '',
-    //         'icon' => 'tags',
-    //         'singular' => true,
-    //         'autoload' => 'template=admin',
-    //         'requires'  => array(
-    //             'JquerySelectize',
-    //             'ProcessWire>=3.0.61'
-    //         )
-    //     );
-    // }
-
 
 	/**
 	 * Upgrade
