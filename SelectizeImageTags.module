@@ -46,18 +46,23 @@ class SelectizeImageTags extends WireData implements Module {
          $event->return = 0;
     }
 
+    public function addPropertyString(HookEvent $event) {
+         $event->return = '';
+    }
+
+
     public function init() {
 
-        $this->addHookProperty("InputfieldImage::selectizeTagField", $this, "addProperty");
-        $this->addHookProperty("InputfieldImage::selectizeTagList", $this, "addProperty");
-        $this->addHookProperty("InputfieldImage::selectizePlugins", $this, "addProperty");
-        $this->addHookProperty("InputfieldImage::selectizeAllowCreate", $this, "addProperty");
+        $this->addHookProperty("InputfieldFile::selectizeTagField", $this, "addProperty");
+        $this->addHookProperty("InputfieldFile::selectizeTagList", $this, "addPropertyString");
+        $this->addHookProperty("InputfieldFile::selectizePlugins", $this, "addProperty");
+        $this->addHookProperty("InputfieldFile::selectizeAllowCreate", $this, "addProperty");
 
         /**
          * Adds additional options to the InputfieldText edit screen.
          *
          */
-        $this->addHookAfter("InputfieldImage::getConfigInputfields", function($event) {
+        $this->addHookAfter("InputfieldFile::getConfigInputfields", function($event) {
             $that = $event->object;
 
             // Enable Selectize.js for this Field?
@@ -108,7 +113,7 @@ class SelectizeImageTags extends WireData implements Module {
         });
 
 
-        $this->addHookAfter('InputfieldImage::getConfigAllowContext', function($event) {
+        $this->addHookAfter('InputfieldFile::getConfigAllowContext', function($event) {
             $array = $event->return;
             $addon = array('selectizeTagField','selectizeTagList','selectizeAllowCreate','selectizePlugins');
             $merged = array_merge($array, $addon);
@@ -120,7 +125,7 @@ class SelectizeImageTags extends WireData implements Module {
          * uses this field/module and add the attrs to the fields.
          *
          */
-        $this->addHookBefore('InputfieldImage::renderReadyHook', function($event) {
+        $this->addHookBefore('InputfieldFile::renderReadyHook', function($event) {
 
             $that = $event->object;
 
@@ -131,8 +136,24 @@ class SelectizeImageTags extends WireData implements Module {
             // - selectizeTagList is populated for this field
             if( ($that->process == 'ProcessPageEdit') && ($that->selectizeTagField && $that->selectizeTagList && $that->useTags) ) {
 
-                $that->modules->JquerySelectize;
+
+                if($this->config->version < '3.0.67') {
+                    //$this->modules->JquerySelectize;
+                    $that->modules->JquerySelectize;
+                } else {
+                    // if the version is >= than 3.0.67, and jQuerySelectize module is installed,
+                    // init the module, in case a skin is selected; the module will use the core
+                    // selectize library anyway...
+                    if($this->modules->get('JquerySelectize')) {
+                        $this->modules->JquerySelectize;
+                    } else {
+                        // shouldn't be necessary to init the plugin because core should already load the assets if tags are enabled on the field
+                        //$this->wire('modules')->get('JqueryUI')->use('selectize');
+                    }
+                }
+
                 $that->config->scripts->add($that->config->urls->siteModules . __CLASS__ . '/' . __CLASS__ . '.js?v=' . time());
+                $that->config->styles->add($that->config->urls->siteModules . __CLASS__ . '/' . __CLASS__ . '.css?v=' . time());
 
                 if(isset($that->selectizeTagList) && $that->selectizeTagList !== '') {
 

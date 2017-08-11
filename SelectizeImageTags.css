@@ -1,0 +1,8 @@
+
+.InputfieldImageEdit__name {
+	z-index: 2 !important;
+}
+
+.InputfieldImageEditAll .gridImage .ImageData {
+	position: static !important;
+}
