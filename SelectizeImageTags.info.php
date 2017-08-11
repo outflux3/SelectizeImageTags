@@ -15,10 +15,6 @@ $info = array(
     )
 );
 
-if($this->wire('config')->version < '3.0.67') {
+if($this->wire('config') && $this->wire('config')->version < '3.0.67') {
 	$info['requires'][] = "JquerySelectize";
-}
-
-if($this->wire('modules')->get("TracyDebugger")) {
-    bd($info);
 }
