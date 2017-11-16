@@ -4,7 +4,7 @@
 $info = array(
     'title' => 'Selectize Image Tags',
     'author' => 'Macrura',
-    'version' => 007,
+    'version' => '008',
     'summary' => 'Admin helper for enabling selectize.js on images tags field.',
     'href' => '',
     'icon' => 'tags',
