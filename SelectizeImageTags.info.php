@@ -4,7 +4,7 @@
 $info = array(
     'title' => 'Selectize Image Tags',
     'author' => 'Macrura',
-    'version' => '008',
+    'version' => '009',
     'summary' => 'Admin helper for enabling selectize.js on images tags field.',
     'href' => '',
     'icon' => 'tags',
@@ -15,6 +15,6 @@ $info = array(
     )
 );
 
-if($this->wire('config') && $this->wire('config')->version < '3.0.67') {
+if(version_compare($this->wire('config')->version, '3.0.67', '<')) {
 	$info['requires'][] = "JquerySelectize";
 }

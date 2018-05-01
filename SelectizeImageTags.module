@@ -16,7 +16,7 @@ class SelectizeImageTags extends WireData implements Module {
 	public function ___upgrade($fromVersion, $toVersion) {
 		// Upgrade from < v0.0.3
 		if($fromVersion < 3) {
-			if($this->config->version < '3.0.61') {
+            if(version_compare($this->config->version, '3.0.61', '<')) {
 				throw new WireException("The minimum required ProcessWire version is 3.0.61");
 			}
 		}
@@ -118,8 +118,7 @@ class SelectizeImageTags extends WireData implements Module {
             // - selectizeTagList is populated for this field
             if( ($that->process == 'ProcessPageEdit') && ($that->selectizeTagField && $that->selectizeTagList && $that->useTags) ) {
 
-
-                if($this->config->version < '3.0.67') {
+                if(version_compare($this->config->version, '3.0.67', '<')) {
                     //$this->modules->JquerySelectize;
                     $that->modules->JquerySelectize;
                 } else {
@@ -169,8 +168,7 @@ class SelectizeImageTags extends WireData implements Module {
 
                     $this->config->js(__CLASS__, $this->jsConfig);
 
-
-                    if($this->config->version > '3.0.66') {
+                    if(version_compare($this->config->version, '3.0.66', '>')) {
                         // prevent core from initializing the field...
                         $this->addHookBefore("InputfieldFile::render", $this, "hookInputfieldFileRender_removeClass");
                     }
